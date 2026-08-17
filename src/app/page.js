@@ -1,69 +1,96 @@
-import Image from "next/image";
+"use client"
+import toast, {Toaster} from 'react-hot-toast'
+import { useEffect, useState } from "react";
+import { supabase } from "../../lib/supabase/client";
 
 export default function Home() {
+  const [name, setName] = useState('');
+  const [keyboard, setKeyboard] = useState('')
+  const [mouse, setMouse] = useState('')
+  const [students, setStudents] = useState([])
+
+  useEffect(() => {
+    getDatabase()
+  }, [])
+
+  const send =  async () => {
+    if(name.trim().length > 4 && (/[A-Z]/.test(name) || /[a-z]/.test(name))){
+      const {data, error} = await supabase.from('battery-tracker').insert({name: name, keyboard_battery: keyboard, mouse_battery: mouse})
+      toast.success("Sent!")
+      setName("")
+      setKeyboard("")
+      setMouse("")
+    } else {
+      toast.error("Requirements not met")
+    }
+    }
+  const getDatabase = async () => {
+    const {data, error} = await supabase.from('battery-tracker').select('*')
+    const items = data.map(item => {
+      return {
+        id: item.id,
+        time: item.created_at,
+        name: item.name,
+        kbattery: item.keyboard_battery,
+        mbattery: item.mouse_battery
+      }
+    })
+    setStudents(items);
+  }
+  const sortKeyboard = async () => {
+    const {data, error} = await supabase.from('battery-tracker').select('*').order('keyboard_battery', {ascending: true})
+    setStudents(data);
+  }
+  const sortMouse = () => {
+    setStudents(students.sort((a, b) => a.mbattery - b.mbattery))
+  }
+
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.js
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-[#121212] flex flex-col items-center justify-center text-[#ffffff]">
+      <div className="w-full max-w-4xl bg-[#121212] rounded-md overflow-hidden shadow-2xl border-2 border-[#262626] flex flex-row">
+        <div className=" w-[40%] p-5 text-base flex flex-col gap-4">
+            {/* title or smth */}
+            <div> 
+              <p className="text-2xl ">Battery tracker</p>
+            </div>
+            {/* inputs */}
+            <div className="flex flex-col gap-3">
+              <input value={name} onChange={(event) => {setName(event.target.value)}} className="w-[90%] h-fit border-2 border-[#262626] rounded-md p-1" placeholder="Your name"></input>
+              <input min="0" max="100" value={keyboard} onChange={(event) => {setKeyboard(event.target.value)}} className="w-[90%] h-fit border-2 border-[#262626] rounded-md p-1" type="number" placeholder="Keyboard percentage"></input>
+              <input min="0" max="100" value={mouse} onChange={(event) => {setMouse(event.target.value)}} className="w-[90%] h-fit border-2 border-[#262626] rounded-md p-1" type="number" placeholder="Mouse percentage"></input>
+              <button onClick={send} className="w-[40%] flex items-center justify-center py-2 font-bold bg-[#4a4a4a] rounded-sm hover:bg-[#FFFFFF] hover:text-[#121212] transition-all duration-300">Send</button>
+            </div>
+
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className=" w-[60%] p-5 text-base flex flex-col gap-3">
+          <p className="text-2xl">Students</p>
+          <div className='flex flex-row gap-4'>
+            <p>Sort by:</p>
+            <button onClick={getDatabase} className='flex items-center justify-center px-2 py-1 font-bold bg-[#4a4a4a] rounded-sm hover:bg-[#FFFFFF] hover:text-[#121212] transition-all duration-300'>All</button>
+            <button onClick={sortKeyboard} className='flex items-center justify-center px-2 py-1 font-bold bg-[#4a4a4a] rounded-sm hover:bg-[#FFFFFF] hover:text-[#121212] transition-all duration-300'>Keyboard battery</button>
+            <button onClick={sortMouse} className='flex items-center justify-center px-2 py-1 font-bold bg-[#4a4a4a] rounded-sm hover:bg-[#FFFFFF] hover:text-[#121212] transition-all duration-300'>Mouse battery</button>
+          </div>
+          <div className='flex flex-row justify-between'>
+            <span>Student:</span>
+            <span>Keyboard:</span>
+            <span>Mouse:</span>
+          </div>
+            {students.map((student) => {
+              return (
+                <div className="flex flex-row justify-between" key={student.id}>
+                  <span>{student.name}</span>
+                  <span>{student.kbattery}</span>
+                  <span>{student.mbattery}</span>
+                </div>
+              )
+            })}
+
+
         </div>
-      </main>
+      </div>
+      <Toaster />
     </div>
-  );
+  )
+
 }

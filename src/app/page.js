@@ -26,16 +26,7 @@ export default function Home() {
     }
   const getDatabase = async () => {
     const {data, error} = await supabase.from('battery-tracker').select('*')
-    const items = data.map(item => {
-      return {
-        id: item.id,
-        time: item.created_at,
-        name: item.name,
-        kbattery: item.keyboard_battery,
-        mbattery: item.mouse_battery
-      }
-    })
-    setStudents(items);
+    setStudents(data);
   }
   const sortKeyboard = async () => {
     const {data, error} = await supabase.from('battery-tracker').select('*').order('keyboard_battery', {ascending: true})
@@ -81,8 +72,8 @@ export default function Home() {
               return (
                 <div className="flex flex-row justify-between" key={student.id}>
                   <span>{student.name}</span>
-                  <span>{student.kbattery}</span>
-                  <span>{student.mbattery}</span>
+                  <span>{student.keyboard_battery}</span>
+                  <span>{student.mouse_battery}</span>
                 </div>
               )
             })}

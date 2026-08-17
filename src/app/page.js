@@ -41,8 +41,9 @@ export default function Home() {
     const {data, error} = await supabase.from('battery-tracker').select('*').order('keyboard_battery', {ascending: true})
     setStudents(data);
   }
-  const sortMouse = () => {
-    setStudents(students.sort((a, b) => a.mbattery - b.mbattery))
+  const sortMouse = async () => {
+    const {data, error} = await supabase.from('battery-tracker').select('*').order('mouse_battery', {ascending: true})
+    setStudents(data);
   }
 
 

@@ -8,6 +8,8 @@ export default function Home() {
   const [keyboard, setKeyboard] = useState('')
   const [mouse, setMouse] = useState('')
   const [students, setStudents] = useState([])
+  const date = new Date().toLocaleDateString('en-CA');
+  const count = students.filter(student => student.created_at.includes(date)).length
 
   useEffect(() => {
     getDatabase()
@@ -60,7 +62,7 @@ export default function Home() {
           <p className="text-2xl">Students</p>
           <div className='flex flex-row gap-4'>
             <p>Sort by:</p>
-            <button onClick={getDatabase} className='flex items-center justify-center px-2 py-1 font-bold bg-[#4a4a4a] rounded-sm hover:bg-[#FFFFFF] hover:text-[#121212] transition-all duration-300'>All ({students.length})</button>
+            <button onClick={getDatabase} className='flex items-center justify-center px-2 py-1 font-bold bg-[#4a4a4a] rounded-sm hover:bg-[#FFFFFF] hover:text-[#121212] transition-all duration-300'>All ({count})</button>
             <button onClick={sortKeyboard} className='flex items-center justify-center px-2 py-1 font-bold bg-[#4a4a4a] rounded-sm hover:bg-[#FFFFFF] hover:text-[#121212] transition-all duration-300'>Keyboard battery</button>
             <button onClick={sortMouse} className='flex items-center justify-center px-2 py-1 font-bold bg-[#4a4a4a] rounded-sm hover:bg-[#FFFFFF] hover:text-[#121212] transition-all duration-300'>Mouse battery</button>
           </div>
@@ -70,13 +72,16 @@ export default function Home() {
             <span>Mouse:</span>
           </div>
             {students.map((student) => {
-              return (
-                <div className="flex flex-row justify-between" key={student.id}>
-                  <span>{student.name}</span>
-                  <span className={` ${student.keyboard_battery < 10 ? "text-red-500" : (student.keyboard_battery > 10 && student.keyboard_battery < 20) ? "text-yellow-300" : "text-green-400"}`}>{student.keyboard_battery}</span>
-                  <span className={` ${student.keyboard_battery < 10 ? "text-red-500" : (student.mouse_battery > 10 && student.mouse_battery < 20) ? "text-yellow-300" : "text-green-400"}`}>{student.mouse_battery}</span>
-                </div>
-              )
+              if(student.created_at.includes(date)){
+                return (
+                  <div className="flex flex-row justify-between" key={student.id}>
+                    <span>{student.name}</span>
+                    <span className={` ${student.keyboard_battery < 10 ? "text-red-500" : (student.keyboard_battery > 10 && student.keyboard_battery < 20) ? "text-yellow-300" : "text-green-400"}`}>{student.keyboard_battery}</span>
+                    <span className={` ${student.keyboard_battery < 10 ? "text-red-500" : (student.mouse_battery > 10 && student.mouse_battery < 20) ? "text-yellow-300" : "text-green-400"}`}>{student.mouse_battery}</span>
+                  </div>
+                )
+
+              }
             })}
 
 

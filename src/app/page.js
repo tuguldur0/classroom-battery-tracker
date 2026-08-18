@@ -20,6 +20,7 @@ export default function Home() {
       setName("")
       setKeyboard("")
       setMouse("")
+      getDatabase()
     } else {
       toast.error("Requirements not met")
     }
@@ -72,8 +73,8 @@ export default function Home() {
               return (
                 <div className="flex flex-row justify-between" key={student.id}>
                   <span>{student.name}</span>
-                  <span>{student.keyboard_battery}</span>
-                  <span>{student.mouse_battery}</span>
+                  <span className={` ${student.keyboard_battery < 10 ? "text-red-500" : (student.keyboard_battery > 10 && student.keyboard_battery < 20) ? "text-yellow-300" : ""}`}>{student.keyboard_battery}</span>
+                  <span className={` ${student.keyboard_battery < 10 ? "text-red-500" : (student.mouse_battery > 10 && student.mouse_battery < 20) ? "text-yellow-300" : ""}`}>{student.mouse_battery}</span>
                 </div>
               )
             })}

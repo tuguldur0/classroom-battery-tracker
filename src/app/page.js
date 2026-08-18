@@ -60,7 +60,7 @@ export default function Home() {
           <p className="text-2xl">Students</p>
           <div className='flex flex-row gap-4'>
             <p>Sort by:</p>
-            <button onClick={getDatabase} className='flex items-center justify-center px-2 py-1 font-bold bg-[#4a4a4a] rounded-sm hover:bg-[#FFFFFF] hover:text-[#121212] transition-all duration-300'>All</button>
+            <button onClick={getDatabase} className='flex items-center justify-center px-2 py-1 font-bold bg-[#4a4a4a] rounded-sm hover:bg-[#FFFFFF] hover:text-[#121212] transition-all duration-300'>All ({students.length})</button>
             <button onClick={sortKeyboard} className='flex items-center justify-center px-2 py-1 font-bold bg-[#4a4a4a] rounded-sm hover:bg-[#FFFFFF] hover:text-[#121212] transition-all duration-300'>Keyboard battery</button>
             <button onClick={sortMouse} className='flex items-center justify-center px-2 py-1 font-bold bg-[#4a4a4a] rounded-sm hover:bg-[#FFFFFF] hover:text-[#121212] transition-all duration-300'>Mouse battery</button>
           </div>
